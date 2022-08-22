@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -13,14 +13,29 @@ class Task(db.Model):
 @app.route('/')
 def home():
     tasks = Task.query.all()
-    return render_template('index.html', tasks= tasks)
+    return render_template('index.html', tasks = tasks)
 
 @app.route('/create-task', methods=['POST'])
 def create():
     task = Task(content=request.form["content"], done=False)
     db.session.add(task)
     db.session.commit()
-    return 'saved'
+    return redirect(url_for('home'))
+
+@app.route('/delete/<id>')
+def delete(id):
+    # .first() devuelve el primer elemento con ese id dentro de la base de datos
+    #task = Task.query.filter_by(id=int(id)).first()
+    task = Task.query.filter_by(id=int(id)).delete()
+    db.session.commit()
+    return redirect (url_for('home'))
+
+@app.route('/done/<id>')
+def done(id):
+    task = Task.query.filter_by(id=int(id)).first()
+    task.done = not(task.done)
+    db.session.commit()
+    return redirect (url_for('home'))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4000, debug=True)

@@ -34,7 +34,15 @@
                         </form>
                     </div>
                     <div class="card-body">
-
+                        <ul class="list-group">
+                            {% for task in tasks %}
+                            <li class="list-group-item">
+                                <span class="{%if task.done %} done {%endif%}">{{task.content}}</span>
+                                <a href="/done/{{task.id}}" class="btn btn-success btn-sm">Done</a>
+                                <a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
